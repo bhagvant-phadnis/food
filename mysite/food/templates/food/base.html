@@ -18,6 +18,11 @@
             <a class="nav-Item nav-link" href="#">Delete Item</a>
         </div>
     </nav>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{message.tags}}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
 
     {% block body %}
     
