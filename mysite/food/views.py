@@ -3,6 +3,10 @@ from django.http import HttpResponse
 from .models import Item
 from django.template import loader
 from .forms import ItemForm
+from django.views.generic.list import ListView
+from django.views.generic.detail import DetailView
+from django.views.generic.edit import CreateView
+
 # Create your views here.
 
 def index(request):
@@ -13,6 +17,11 @@ def index(request):
           }
     return render(request, 'food/index.html', context)
 #    return HttpResponse(template.render(context,request))
+
+class ItemClassView(ListView):
+    model=Item;
+    template_name='food/index.html'
+    context_object_name='item_list'
 
 def item(request):
     return HttpResponse("<h1>This is new Item </h1>")
@@ -25,6 +34,10 @@ def detail(request,item_id):
 #    return HttpResponse("This is item no/id: %s" % item_id)
     return render(request,'food/detail.html', context)
 
+class FoodDetail(DetailView):
+    model=Item
+    template_name='food/detail.html'
+
 def create_item(request):
     # user form class
     form=ItemForm(request.POST or None)
@@ -32,6 +45,18 @@ def create_item(request):
         form.save()
         return redirect('food:index')
     return render(request,'food/Item-form.html', {'form':form})
+
+# Class based view to create item
+
+class CreateItem(CreateView):
+    model=Item
+    fields = ['item_name','item_desc','item_price','item_image']
+    template_name = 'food/Item-form.html'
+
+    def form_valid(self,form):
+        form.instance.user_name = self.request.user
+
+        return super().form_valid(form)
 
 # Update items
 def update_item(request, id):
